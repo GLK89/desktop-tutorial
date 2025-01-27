@@ -158,8 +158,8 @@ mockData.forEach((candidate) => {
   // Controleer of de leeftijden overeenkomen
   if (
     !(
-      userProfile.age >= candidate.minMatchAge &&
-      userProfile.age <= candidate.maxMatchAge
+      userProfile.age >= candidate.min_age_interest &&
+      userProfile.age <= candidate.max_age_interest
     ) &&
     !(
       candidate.age >= userProfile.minMatchAge &&
@@ -171,8 +171,8 @@ mockData.forEach((candidate) => {
 
   // Controleer of geslachten overeenkomen
   if (
-    userProfile.gender !== candidate.interestedIn &&
-    candidate.gender !== userProfile.interestedIn
+    userProfile.interestedIn !== candidate.gender &&
+    candidate.interestedIn !== userProfile.gender
   ) {
     isMatch = false;
   }

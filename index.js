@@ -35,7 +35,6 @@ let answers = []; // Array om antwoorden in op te slaan
 
 // Itereer door vragen en sla antwoorden op in het object
 for (let i = 0; i < questions.length; i++) {
-  // userProfile[keys[i]] = answer; // Sla het antwoord op in userProfile met de juiste sleutel DIT HAD IK EERST
   let answer = "";
   let isValid = false;
 
@@ -59,35 +58,65 @@ for (let i = 0; i < questions.length; i++) {
         );
         continue;
       }
+
+      // Controleer of de naam alleen letters bevat (geen cijfers of speciale tekens)
+      let isValidName = true;
+      for (let j = 0; j < answer.trim().length; j++) {
+        // Kijk of het karakter een letter is door te controleren of het een niet-letter is
+        if (!isNaN(answer.trim()[j]) || !/[A-Za-z]/.test(answer.trim()[j])) {
+          isValidName = false;
+          break;
+        }
+      }
+
+      if (!isValidName) {
+        console.log("Please enter a valid name with only letters.");
+        continue;
+      }
+
       userProfile[questionKeys[i]] = answer.trim(); // Sla het antwoord op
       isValid = true; // Markeer de invoer als geldig
     }
 
-    // Validatie voor leeftijd (moet 18 of ouder zijn)
+    // Validatie voor leeftijd (moet tussen de 18 en 100 jaar liggen)
     else if (i === 2 || i === 6 || i === 7) {
-      const age = Number(answer);
-      if (isNaN(age) || age < 18) {
-        console.log("You must be at least 18 years old to proceed.");
+      const age = Number(answer); //(antwoord omgezet naar getal)
+
+      // Controleer of de leeftijd een getal is en tussen 18 en 100 ligt
+      if (isNaN(age) || age < 18 || age > 100) {
+        console.log("Please enter a valid age between 18 and 100.");
+
+        // Stop de loop als de gebruiker jonger is dan 18 jaar
+        if (age < 18) {
+          console.log("You must be at least 18 years old to proceed.");
+          return; // Stop de loop (en de hele functie)
+        }
+
         continue;
       }
+
       userProfile[questionKeys[i]] = age; // Sla het antwoord op als een nummer
       isValid = true;
     }
+
     // Validatie voor geslacht (moet M, F of X zijn)
     else if (i === 4 || i === 5) {
       if (answer !== "M" && answer !== "F" && answer !== "X") {
         console.log("Gender must be M, F, or X.");
         continue;
       }
+
       userProfile[questionKeys[i]] = answer; // Sla het antwoord op als een string
       isValid = true;
     }
+
     // Validatie voor locatie (moet "rural" of "city" zijn)
     else if (i === 3) {
       if (answer !== "rural" && answer !== "city") {
         console.log('Location must be either "rural" or "city".');
         continue;
       }
+
       userProfile[questionKeys[i]] = answer; // Sla het antwoord op als een string
       isValid = true;
     }
@@ -99,6 +128,9 @@ for (let i = 0; i < questions.length; i++) {
         console.log("Please enter a valid age of 18 or older.");
         continue;
       }
+
+      userProfile[questionKeys[i]] = age;
+
       // Als het de maximale leeftijd is, controleer of deze groter is dan de minimale leeftijd
       if (i === 7 && userProfile.minMatchAge >= age) {
         console.log(
@@ -106,11 +138,27 @@ for (let i = 0; i < questions.length; i++) {
         );
         continue;
       }
-      userProfile[questionKeys[i]] = age;
+
+      // Als het de minimale leeftijd is, controleer of deze kleiner is dan de maximale leeftijd
+      if (i === 6 && userProfile.maxMatchAge <= age) {
+        console.log(
+          "Minimum match age must be less than the maximum match age."
+        );
+        continue;
+      }
+
       isValid = true;
     }
-    // Voeg het antwoord toe aan de answers array wanneer het geldig is
 
+    // Nieuwe validatie om te controleren of maxMatchAge kleiner is dan minMatchAge
+    if (userProfile.minMatchAge >= userProfile.maxMatchAge) {
+      console.log(
+        "Error: Maximum match age cannot be less than or equal to minimum match age."
+      );
+      return; //
+    }
+
+    // Voeg het antwoord toe aan de answers array wanneer het geldig is
     if (isValid) {
       answers.push(answer.trim());
     }
@@ -118,9 +166,9 @@ for (let i = 0; i < questions.length; i++) {
 }
 
 console.log(userProfile); // Toon het volledige object in de console
-//console.log(answers); // Toon de array van antwoorden in de console
+//console.log(answers); // Toon de array van antwoorden in de console (uiteindelijk niet voor gekozen)
 
-// Nu gaan we de matchingsfunctionaliteit toevoegen
+// Match functie:
 
 let matchCount = 0; // Variabele om het aantal matches bij te houden
 
@@ -135,8 +183,8 @@ mockData.forEach((candidate) => {
   // Controleer of de leeftijden overeenkomen
   if (
     !(
-      userProfile.age >= candidate.minMatchAge &&
-      userProfile.age <= candidate.maxMatchAge
+      userProfile.age >= candidate.min_age_interest &&
+      userProfile.age <= candidate.max_age_interest
     ) &&
     !(
       candidate.age >= userProfile.minMatchAge &&
@@ -145,7 +193,7 @@ mockData.forEach((candidate) => {
   ) {
     isMatch = false;
   }
-  //anders omschreven:
+  //anders omschreven, maar  niet voor gekozen:
   //if (
   //  (userProfile.age < candidate.minMatchAge || userProfile.age > candidate.maxMatchAge) &&
   //(candidate.age < userProfile.minMatchAge || candidate.age > userProfile.maxMatchAge)
@@ -155,8 +203,8 @@ mockData.forEach((candidate) => {
 
   // Controleer of geslachten overeenkomen
   if (
-    userProfile.gender !== candidate.interestedIn &&
-    candidate.gender !== userProfile.interestedIn
+    userProfile.interestedIn !== candidate.gender &&
+    candidate.interestedIn !== userProfile.gender
   ) {
     isMatch = false;
   }
