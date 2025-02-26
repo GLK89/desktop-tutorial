@@ -117,6 +117,25 @@ for (let i = 0; i < questions.length; i++) {
         continue; // Vraag opnieuw de maximum leeftijd
       }
 
+      // Gebruik validateAge om de leeftijd te valideren (extra toegevoegd nav feedback)
+      if (i === 2) {
+        // Voor de gebruikersleeftijd
+        if (!validateAge(age, 18, 100)) {
+          continue; // Als de leeftijd niet geldig is, ga verder met de volgende iteratie
+        }
+        userProfile[questionKeys[i]] = age; // Pas na validatie opslaan
+        isValid = true; // Markeer als geldig
+      } else if (i === 6 || i === 7) {
+        // Voor minMatchAge en maxMatchAge
+        const minAge = userProfile.minMatchAge || 0;
+        const maxAge = userProfile.maxMatchAge || 100;
+        if (!validateAge(age, minAge, maxAge)) {
+          continue; // Als de leeftijd niet geldig is, ga verder met de volgende iteratie
+        }
+        userProfile[questionKeys[i]] = age; // Pas na validatie opslaan
+        isValid = true; // Markeer als geldig
+      }
+
       //OUDE manier-gelijk gestopt Roep validateAge functie aan voor de validatie
       //if (!validateAge(age, userProfile.minMatchAge, userProfile.maxMatchAge)) {
       //  continue; // Als de leeftijd niet geldig is, ga verder met de volgende iteratie
@@ -217,7 +236,7 @@ mockData.forEach((candidate) => {
   if (isMatch) {
     matchCount++;
     console.log(
-      `${candidate.first_name} ${candidate.last_name}, Age: ${candidate.age}, Location: ${candidate.location}`
+      `${candidate.first_name} ${candidate.last_name}, Age: ${candidate.age}, Location: ${candidate.location}, Gender: ${candidate.gender}, Genderinterest: ${candidate.gender_interest}`
     );
   }
 });

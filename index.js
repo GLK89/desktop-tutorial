@@ -41,6 +41,7 @@ for (let i = 0; i < questions.length; i++) {
   // Zorg ervoor dat de input geldig is
   while (!isValid) {
     answer = prompt(questions[i] + " "); // Vraag om antwoord
+
     // Zet de invoer voor geslacht en locatie om naar kleine letters
     if (i === 4 || i === 5) {
       answer = answer.toUpperCase(); // Zet geslacht om naar hoofdletters (M,F,X)
@@ -126,81 +127,23 @@ for (let i = 0; i < questions.length; i++) {
     // Validatie voor minimale en maximale leeftijd van de match
     else if (i === 6 || i === 7) {
       let age = Number(answer);
+
       if (isNaN(age) || age < 18) {
         console.log("Please enter a valid age of 18 or older.");
         continue;
       }
 
       userProfile[questionKeys[i]] = age;
-      // Controleer alleen als beide waarden zijn ingevoerd
-      if (i === 7) {
-        // Bij het invoeren van maxMatchAge
-        if (
-          userProfile.minMatchAge !== undefined &&
-          userProfile.minMatchAge >= userProfile.maxMatchAge
-        ) {
-          console.log(
-            "Maximum match age must be greater than the minimum match age."
-          );
-          continue;
-        }
-      }
 
-      if (i === 6) {
-        // Bij het invoeren van minMatchAge
-        if (
-          userProfile.maxMatchAge !== undefined &&
-          userProfile.minMatchAge >= userProfile.maxMatchAge
-        ) {
-          console.log(
-            "Minimum match age must be less than the maximum match age."
-          );
-          continue;
-        }
-      }
-
-      //dit had ik allemaal eerst:
-      /* // Na het invoeren van minMatchAge of maxMatchAge, zorgen we ervoor dat minMatchAge < maxMatchAge
-      if (i === 7 && userProfile.minMatchAge >= userProfile.maxMatchAge) {
-        console.log(
-          "Maximum match age must be greater than the minimum match age."
-        );
-        continue; // Vraag opnieuw de maximum leeftijd
-      }
-
-      // Als het de minimum leeftijd is, controleren we of minMatchAge kleiner is dan maxMatchAge
-      if (i === 6 && userProfile.maxMatchAge <= userProfile.minMatchAge) {
+      // Controleer of minMatchAge kleiner is dan maxMatchAge
+      if (userProfile.minMatchAge >= userProfile.maxMatchAge) {
         console.log(
           "Minimum match age must be less than the maximum match age."
         );
-        continue; // Vraag opnieuw de minimum leeftijd
+        continue; // Vraag opnieuw om de input
       }
 
-      /*  // Als het de minimale leeftijd is, controleer of deze kleiner is dan de maximale leeftijd
-      //if (i === 6 && userProfile.maxMatchAge <= userProfile.maxMatchAge) {
-        //console.log(
-        //  "Minimum match age must be less than the maximum match age."
-       // );
-        //continue;
-      //}
-
-      // Als het de maximale leeftijd is, controleer of deze groter is dan de minimale leeftijd
-      if (i === 7 && userProfile.minMatchAge >= userProfile.maxMatchAge) {
-        console.log(
-          "Maximum match age must be greater than the minimum match age."
-        );
-        continue;
-      } */
-
       isValid = true;
-    }
-
-    // Nieuwe validatie om te controleren of maxMatchAge kleiner is dan minMatchAge
-    if (userProfile.minMatchAge >= userProfile.maxMatchAge) {
-      console.log(
-        "Error: Maximum match age cannot be less than or equal to minimum match age."
-      );
-      continue; //
     }
 
     // Voeg het antwoord toe aan de answers array wanneer het geldig is
@@ -214,7 +157,6 @@ console.log(userProfile); // Toon het volledige object in de console
 //console.log(answers); // Toon de array van antwoorden in de console (uiteindelijk niet voor gekozen)
 
 // Match functie:
-
 let matchCount = 0; // Variabele om het aantal matches bij te houden
 
 // Toon het aantal matches en de resultaten
@@ -238,13 +180,6 @@ mockData.forEach((candidate) => {
   ) {
     isMatch = false;
   }
-  //anders omschreven, maar  niet voor gekozen:
-  //if (
-  //  (userProfile.age < candidate.minMatchAge || userProfile.age > candidate.maxMatchAge) &&
-  //(candidate.age < userProfile.minMatchAge || candidate.age > userProfile.maxMatchAge)
-  //) {
-  //isMatch = false;
-  //}
 
   // Nieuwe manier of geslachten overeenkomen, rekening houdend met voorkeuren
   if (
@@ -255,13 +190,6 @@ mockData.forEach((candidate) => {
   ) {
     isMatch = false;
   }
-  // DIT HAD IK EERST: Controleer of geslachten overeenkomen
-  //if (
-  //  userProfile.interestedIn !== candidate.gender &&
-  //  candidate.interestedIn !== userProfile.gender
-  //) {
-  //  isMatch = false;
-  //}
 
   // Controleer of de locatie overeenkomt
   if (userProfile.location !== candidate.location) {
@@ -276,8 +204,5 @@ mockData.forEach((candidate) => {
     );
   }
 });
-
 // Toon het aantal matches
 console.log(`Number of matches: ${matchCount}`);
-//zonder apart te loggen: console.log(`Your dating matches are: ${matchCount}`);
-// of: console.log("Your dating matches are: " + matchCount);
