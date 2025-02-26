@@ -128,20 +128,13 @@ for (let i = 0; i < questions.length; i++) {
     else if (i === 6 || i === 7) {
       let age = Number(answer);
 
-      if (isNaN(age) || age < 18) {
+      while (isNaN(age) || age < 18) {
+        //was eerst een if
         console.log("Please enter a valid age of 18 or older.");
         continue;
       }
 
       userProfile[questionKeys[i]] = age;
-
-      // Controleer of minMatchAge kleiner is dan maxMatchAge
-      if (userProfile.minMatchAge >= userProfile.maxMatchAge) {
-        console.log(
-          "Minimum match age must be less than the maximum match age."
-        );
-        continue; // Vraag opnieuw om de input
-      }
 
       isValid = true;
     }
@@ -151,6 +144,12 @@ for (let i = 0; i < questions.length; i++) {
       answers.push(answer.trim());
     }
   }
+}
+
+// Controleer hier of minMatchAge kleiner is dan maxMatchAge
+while (userProfile.minMatchAge >= userProfile.maxMatchAge) {
+  console.log("Minimum match age must be less than the maximum match age.");
+  return; // Stop de uitvoering als de validatie niet klopt
 }
 
 console.log(userProfile); // Toon het volledige object in de console
@@ -165,42 +164,26 @@ console.log(`Your dating matches are:`);
 // Loop door de mockData om de matches te vinden
 mockData.forEach((candidate) => {
   // Vergelijk de criteria voor een match
-  let isMatch = true;
+  let isMatch = false;
 
-  // Controleer of de leeftijden overeenkomen
+  // Controleer of alles overeenkomt
   if (
-    !(
-      userProfile.age >= candidate.min_age_interest &&
-      userProfile.age <= candidate.max_age_interest
-    ) &&
-    !(
-      candidate.age >= userProfile.minMatchAge &&
-      candidate.age <= userProfile.maxMatchAge
-    )
+    userProfile.age >= candidate.min_age_interest &&
+    userProfile.age <= candidate.max_age_interest &&
+    candidate.age >= userProfile.minMatchAge &&
+    candidate.age <= userProfile.maxMatchAge &&
+    userProfile.interestedIn === candidate.gender &&
+    candidate.gender_interest === userProfile.gender &&
+    userProfile.location !== candidate.location
   ) {
-    isMatch = false;
-  }
-
-  // Nieuwe manier of geslachten overeenkomen, rekening houdend met voorkeuren
-  if (
-    !(
-      userProfile.interestedIn === candidate.gender ||
-      candidate.interestedIn === userProfile.gender
-    )
-  ) {
-    isMatch = false;
-  }
-
-  // Controleer of de locatie overeenkomt
-  if (userProfile.location !== candidate.location) {
-    isMatch = false;
+    isMatch = true;
   }
 
   // Als alles klopt, is het een match
   if (isMatch) {
     matchCount++;
     console.log(
-      `${candidate.first_name} ${candidate.last_name}, Age: ${candidate.age}, Location: ${candidate.location}`
+      `${candidate.first_name} ${candidate.last_name}, Age: ${candidate.age}, Location: ${candidate.location}, Gender: ${candidate.gender}, Genderinterest: ${candidate.gender_interest}`
     );
   }
 });

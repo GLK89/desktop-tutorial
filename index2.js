@@ -136,11 +136,6 @@ for (let i = 0; i < questions.length; i++) {
         isValid = true; // Markeer als geldig
       }
 
-      //OUDE manier-gelijk gestopt Roep validateAge functie aan voor de validatie
-      //if (!validateAge(age, userProfile.minMatchAge, userProfile.maxMatchAge)) {
-      //  continue; // Als de leeftijd niet geldig is, ga verder met de volgende iteratie
-      //}
-
       userProfile[questionKeys[i]] = age; // Sla het antwoord op als een nummer
       isValid = true;
     }
@@ -175,7 +170,7 @@ for (let i = 0; i < questions.length; i++) {
 }
 
 // Controleer hier of minMatchAge kleiner is dan maxMatchAge
-if (userProfile.minMatchAge >= userProfile.maxMatchAge) {
+while (userProfile.minMatchAge >= userProfile.maxMatchAge) {
   console.log("Minimum match age must be less than the maximum match age.");
   return; // Stop de uitvoering als de validatie niet klopt
 }
@@ -193,43 +188,19 @@ console.log(`Your dating matches are:`);
 // Loop door de mockData om de matches te vinden
 mockData.forEach((candidate) => {
   // Vergelijk de criteria voor een match
-  let isMatch = true;
+  let isMatch = false;
 
-  // Controleer of de leeftijden overeenkomen
+  // Controleer of het overeenkomt
   if (
-    !(
-      userProfile.age >= candidate.min_age_interest &&
-      userProfile.age <= candidate.max_age_interest
-    ) &&
-    !(
-      candidate.age >= userProfile.minMatchAge &&
-      candidate.age <= userProfile.maxMatchAge
-    )
+    userProfile.age >= candidate.min_age_interest &&
+    userProfile.age <= candidate.max_age_interest &&
+    candidate.age >= userProfile.minMatchAge &&
+    candidate.age <= userProfile.maxMatchAge &&
+    userProfile.interestedIn === candidate.gender &&
+    candidate.gender_interest === userProfile.gender && //interestedIn verandert naar gender_interest
+    userProfile.location !== candidate.location
   ) {
-    isMatch = false;
-  }
-
-  //Nieuwe manier om gender en geslacht te controleren
-  if (
-    !(
-      userProfile.interestedIn === candidate.gender ||
-      candidate.interestedIn === userProfile.gender
-    )
-  ) {
-    isMatch = false;
-  }
-
-  //OUDE Manier Controleer of geslachten overeenkomen
-  //if (
-  //  userProfile.interestedIn !== candidate.gender &&
-  //  candidate.interestedIn !== userProfile.gender
-  //) {
-  //  isMatch = false;
-  //}
-
-  // Controleer of de locatie overeenkomt
-  if (userProfile.location !== candidate.location) {
-    isMatch = false;
+    isMatch = true;
   }
 
   // Als alles klopt, is het een match
